@@ -21,6 +21,42 @@ interface Skill {
   };
 }
 
+const FALLBACK_SKILLS: Skill[] = [
+  {
+    id: "skill-tool-use-guardian",
+    name: "Tool Use Guardian",
+    description:
+      "Reliability wrapper for agent tool calls with retries, timeout enforcement, JSON repair, and structured failure metadata.",
+    version: "1.0.0",
+    creatorAgentId: "Cso4c8LAh84fHMvPDeNoVctLNKhsi6tbcRUUp2bcnKgt",
+    pricing: { type: "per-call", amount: 0, currency: "FLUX" },
+    packageUrl: "https://github.com/christopherlhammer11-ai/tool-use-guardian",
+    performanceMetrics: { avgLatencyMs: 0, successRate: 1 },
+  },
+  {
+    id: "skill-prompt-condenser",
+    name: "Prompt Condenser",
+    description:
+      "Prompt compression utility that reduces token cost while preserving code, JSON, URLs, and task intent.",
+    version: "1.0.0",
+    creatorAgentId: "Hpa8TfRWqyUZCQikiTMgtHsft8favSVNbA82PYdCDwNB",
+    pricing: { type: "per-call", amount: 8, currency: "FLUX" },
+    packageUrl: "https://github.com/christopherlhammer11-ai/prompt-condenser",
+    performanceMetrics: { avgLatencyMs: 500, successRate: 1 },
+  },
+  {
+    id: "skill-real-time-verifier",
+    name: "Real-Time Verifier",
+    description:
+      "Verification layer for agent outputs: URL liveness, structured validation, claim checks, and trust scores.",
+    version: "1.0.0",
+    creatorAgentId: "Hpa8TfRWqyUZCQikiTMgtHsft8favSVNbA82PYdCDwNB",
+    pricing: { type: "per-call", amount: 15, currency: "FLUX" },
+    packageUrl: "https://github.com/christopherlhammer11-ai/real-time-verifier",
+    performanceMetrics: { avgLatencyMs: 8000, successRate: 1 },
+  },
+];
+
 async function getSkills(): Promise<Skill[]> {
   try {
     const res = await fetch(`${GENESIS_API}/v1/discover`, {
@@ -29,9 +65,11 @@ async function getSkills(): Promise<Skill[]> {
       body: JSON.stringify({ query: "" }),
       next: { revalidate: 60 },
     });
-    return res.json();
+    if (!res.ok) return FALLBACK_SKILLS;
+    const skills = (await res.json()) as Skill[];
+    return skills.length > 0 ? skills : FALLBACK_SKILLS;
   } catch {
-    return [];
+    return FALLBACK_SKILLS;
   }
 }
 
@@ -81,7 +119,7 @@ export default async function Home() {
         <div className="relative z-10 max-w-4xl mx-auto px-6 pt-20 pb-16 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 text-xs font-medium text-purple-300 bg-purple-500/10 border border-purple-500/20 rounded-full">
             <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-            Live on Solana
+            Live API + fallback catalog
           </div>
 
           <h1 className="text-5xl sm:text-7xl font-bold tracking-tight mb-6">
@@ -108,7 +146,14 @@ export default async function Home() {
               target="_blank"
               className="px-8 py-3 text-base font-medium rounded-full border border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white transition-colors font-mono"
             >
-              POST /v1/discover
+              Health JSON
+            </a>
+            <a
+              href="https://2026-04-21-that-s-a-full-green-run.vercel.app/demo-guide.md"
+              target="_blank"
+              className="px-8 py-3 text-base font-medium rounded-full border border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white transition-colors"
+            >
+              Demo Guide
             </a>
           </div>
         </div>
@@ -168,10 +213,19 @@ export default async function Home() {
       {/* Skills Catalog */}
       <section id="skills" className="max-w-5xl mx-auto px-6 py-16">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold">Skill Catalog</h2>
-          <span className="text-sm text-zinc-500">
-            {skills.length} skills available
-          </span>
+          <div>
+            <h2 className="text-2xl font-bold">Skill Catalog</h2>
+            <p className="text-sm text-zinc-500 mt-1">
+              Pulled from Genesis Node when available, with a built-in fallback catalog for demos.
+            </p>
+          </div>
+          <a
+            href="https://genesis-node-api.vercel.app"
+            target="_blank"
+            className="text-sm text-purple-300 hover:text-white transition-colors font-mono"
+          >
+            {skills.length} skills / API online
+          </a>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {skills.map((skill) => (
