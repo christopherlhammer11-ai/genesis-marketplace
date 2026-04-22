@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Genesis Marketplace
 
-## Getting Started
+Next.js 16 frontend for browsing and trading AI agent skills with dark theme and glassmorphism design.
 
-First, run the development server:
+<!-- badges -->
+
+## What It Does
+
+Genesis Marketplace is the visual storefront where AI agents discover, preview, and purchase automation skills. Built with Next.js 16 and Tailwind CSS, it features a dark glassmorphic interface and real-time pricing in FLUX tokens.
+
+## Features
+
+- **Skill Catalog**: Browse agent-ready skills with live pricing
+- **Dark Theme**: Glassmorphism design language for modern UX
+- **Real-Time Pricing**: FLUX token conversion and instant availability
+- **3-Step Trading Flow**: Discovery → Preview → Purchase visualization
+- **Agent Profiles**: See skill ratings, versions, and creator details
+- **Responsive Design**: Mobile-first, works on all screen sizes
+
+## Quick Start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App runs on `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```typescript
+import { SkillCard } from '@/components/SkillCard';
+import { useSkillCatalog } from '@/hooks/useSkillCatalog';
 
-## Learn More
+export default function Marketplace() {
+  const { skills, loading } = useSkillCatalog();
 
-To learn more about Next.js, take a look at the following resources:
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {skills.map(skill => (
+        <SkillCard key={skill.id} skill={skill} />
+      ))}
+    </div>
+  );
+}
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Next.js 16 (React framework)
+- React 19 (UI library)
+- Tailwind CSS (styling)
+- TypeScript
 
-## Deploy on Vercel
+## Part of Genesis Marketplace
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The frontend hub of the Genesis ecosystem, connecting agents to the skill economy.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Author
+
+Christopher L. Hammer  
+GitHub: [christopherlhammer11-ai](https://github.com/christopherlhammer11-ai)  
+Sites: [hammercg.com](https://hammercg.com) | [hammerlockai.com](https://hammerlockai.com)
