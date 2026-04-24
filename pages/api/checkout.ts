@@ -1,25 +1,22 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_TEST_SECRET_KEY!, { apiVersion: '2020-08-27' });
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    try {
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [{ price: req.body.priceId, quantity: 1 }],
-        mode: 'payment',
-        success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.origin}/cancel`,
-      });
-
-      res.status(200).json({ id: session.id });
-    } catch (err: any) {
-      res.status(500).json({ statusCode: 500, message: err.message });
-    }
-  } else {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     res.status(405).end('Method Not Allowed');
+    return;
   }
+
+  const { skillId, priceId } = req.body || {};
+
+  res.status(200).json({
+    mode: 'demo',
+    message:
+      'Checkout is intentionally stubbed for the public Genesis Marketplace demo. Live payment settlement belongs in Genesis Node / Solana FLUX flow.',
+    requested: {
+      skillId: skillId || null,
+      priceId: priceId || null,
+    },
+    next: 'Use POST https://genesis-node-api.vercel.app/v1/discover to inspect live skill metadata.',
+  });
 }

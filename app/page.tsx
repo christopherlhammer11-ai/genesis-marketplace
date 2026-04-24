@@ -1,5 +1,7 @@
 import { SkillCard } from "./components/SkillCard";
 import { StatsBar } from "./components/StatsBar";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { Suspense } from "react";
 
 const GENESIS_API = "https://genesis-node-api.vercel.app";
 
@@ -65,17 +67,84 @@ async function getSkills(): Promise<Skill[]> {
       body: JSON.stringify({ query: "" }),
       next: { revalidate: 60 },
     });
-    if (!res.ok) return FALLBACK_SKILLS;
+
+    if (!res.ok) {
+      console.warn(
+        `Failed to fetch skills: ${res.status} ${res.statusText}. Using fallback catalog.`
+      );
+      return FALLBACK_SKILLS;
+    }
+
     const skills = (await res.json()) as Skill[];
+    if (!Array.isArray(skills)) {
+      console.warn(
+        "Invalid skills response format. Using fallback catalog."
+      );
+      return FALLBACK_SKILLS;
+    }
+
     return skills.length > 0 ? skills : FALLBACK_SKILLS;
-  } catch {
+  } catch (err) {
+    console.warn(
+      `Error fetching skills from Genesis API: ${err instanceof Error ? err.message : String(err)}. Using fallback catalog.`
+    );
     return FALLBACK_SKILLS;
   }
 }
 
-export default async function Home() {
-  const skills = await getSkills();
+function SkillsSkeleton() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {[1, 2, 3, 4].map((i) => (
+        <div
+          key={i}
+          className="p-6 rounded-xl bg-zinc-900/50 border border-zinc-800 animate-pulse"
+        >
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex-1">
+              <div className="h-5 bg-zinc-700 rounded w-3/4 mb-2" />
+              <div className="h-3 bg-zinc-800 rounded w-1/3" />
+            </div>
+            <div className="h-6 bg-zinc-700 rounded w-16" />
+          </div>
+          <div className="h-8 bg-zinc-800 rounded mb-4" />
+          <div className="h-8 bg-zinc-700 rounded w-full" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
+async function SkillsContent() {
+  const skills = await getSkills();
+  return (
+    <>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h2 className="text-2xl font-bold">Skill Catalog</h2>
+          <p className="text-sm text-zinc-500 mt-1">
+            Pulled from Genesis Node when available, with a built-in fallback catalog for demos.
+          </p>
+        </div>
+        <a
+          href="https://genesis-node-api.vercel.app"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-purple-300 hover:text-white transition-colors font-mono"
+        >
+          {skills.length} skills / API online
+        </a>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {skills.map((skill) => (
+          <SkillCard key={skill.id} skill={skill} />
+        ))}
+      </div>
+    </>
+  );
+}
+
+function HomeContent() {
   return (
     <div className="min-h-screen bg-[#09090b]">
       {/* Hero */}
@@ -95,6 +164,7 @@ export default async function Home() {
             <a
               href="https://genesis-node-api.vercel.app"
               target="_blank"
+              rel="noopener noreferrer"
               className="text-sm text-zinc-400 hover:text-white transition-colors"
             >
               API
@@ -102,6 +172,7 @@ export default async function Home() {
             <a
               href="https://github.com/christopherlhammer11-ai/genesis-node-api"
               target="_blank"
+              rel="noopener noreferrer"
               className="text-sm text-zinc-400 hover:text-white transition-colors"
             >
               GitHub
@@ -109,6 +180,7 @@ export default async function Home() {
             <a
               href="https://github.com/christopherlhammer11-ai/tool-use-guardian"
               target="_blank"
+              rel="noopener noreferrer"
               className="px-4 py-2 text-sm font-medium rounded-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 transition-all"
             >
               Get Free Skill
@@ -144,6 +216,7 @@ export default async function Home() {
             <a
               href="https://genesis-node-api.vercel.app"
               target="_blank"
+              rel="noopener noreferrer"
               className="px-8 py-3 text-base font-medium rounded-full border border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white transition-colors font-mono"
             >
               Health JSON
@@ -151,6 +224,7 @@ export default async function Home() {
             <a
               href="https://2026-04-21-that-s-a-full-green-run.vercel.app/demo-guide.md"
               target="_blank"
+              rel="noopener noreferrer"
               className="px-8 py-3 text-base font-medium rounded-full border border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white transition-colors"
             >
               Demo Guide
@@ -160,7 +234,9 @@ export default async function Home() {
       </header>
 
       {/* Stats */}
-      <StatsBar skillCount={skills.length} />
+      <Suspense fallback={<div className="h-16 bg-zinc-900/50 animate-pulse" />}>
+        <StatsBarWrapper />
+      </Suspense>
 
       {/* How It Works */}
       <section className="max-w-5xl mx-auto px-6 py-16">
@@ -212,26 +288,9 @@ export default async function Home() {
 
       {/* Skills Catalog */}
       <section id="skills" className="max-w-5xl mx-auto px-6 py-16">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-bold">Skill Catalog</h2>
-            <p className="text-sm text-zinc-500 mt-1">
-              Pulled from Genesis Node when available, with a built-in fallback catalog for demos.
-            </p>
-          </div>
-          <a
-            href="https://genesis-node-api.vercel.app"
-            target="_blank"
-            className="text-sm text-purple-300 hover:text-white transition-colors font-mono"
-          >
-            {skills.length} skills / API online
-          </a>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {skills.map((skill) => (
-            <SkillCard key={skill.id} skill={skill} />
-          ))}
-        </div>
+        <Suspense fallback={<SkillsSkeleton />}>
+          <SkillsContent />
+        </Suspense>
       </section>
 
       {/* CTA */}
@@ -247,6 +306,7 @@ export default async function Home() {
           <a
             href="https://github.com/christopherlhammer11-ai/genesis-node-api"
             target="_blank"
+            rel="noopener noreferrer"
             className="px-8 py-3 text-base font-medium rounded-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 transition-all"
           >
             Publish a Skill
@@ -254,6 +314,7 @@ export default async function Home() {
           <a
             href="https://github.com/christopherlhammer11-ai/tool-use-guardian"
             target="_blank"
+            rel="noopener noreferrer"
             className="px-8 py-3 text-base font-medium rounded-full border border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white transition-colors"
           >
             Get Tool Use Guardian (Free)
@@ -271,12 +332,25 @@ export default async function Home() {
             Genesis Marketplace — Built by Craig, AI CEO
           </div>
           <div className="flex items-center gap-6 text-sm text-zinc-500">
-            <a href="https://genesis-node-api.vercel.app" className="hover:text-white transition-colors">API</a>
-            <a href="https://github.com/christopherlhammer11-ai/genesis-node-api" className="hover:text-white transition-colors">GitHub</a>
+            <a href="https://genesis-node-api.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">API</a>
+            <a href="https://github.com/christopherlhammer11-ai/genesis-node-api" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
             <span>FLUX on Solana</span>
           </div>
         </div>
       </footer>
     </div>
+  );
+}
+
+async function StatsBarWrapper() {
+  const skills = await getSkills();
+  return <StatsBar skillCount={skills.length} />;
+}
+
+export default function Home() {
+  return (
+    <ErrorBoundary>
+      <HomeContent />
+    </ErrorBoundary>
   );
 }
