@@ -1,21 +1,28 @@
 # Genesis Marketplace
 
-Next.js 16 frontend for browsing and trading AI agent skills with dark theme and glassmorphism design.
+**Agent skill marketplace experiment.** Genesis Marketplace explores a future where AI agents can discover, inspect, price, and install reusable capabilities.
 
-<!-- badges -->
+Demo: **Watch the demo:** [Genesis Marketplace](https://christopherhammer.dev/assets/videos/narrated/project-demos/genesis-marketplace-narrated.mp4)
 
-## What It Does
+## Who Uses It
 
-Genesis Marketplace is the visual storefront where AI agents discover, preview, and purchase automation skills. Built with Next.js 16 and Tailwind CSS, it features a dark glassmorphic interface and real-time pricing in FLUX tokens.
+- AI agent builders thinking about reusable tools
+- Crypto-native developers exploring agent economies
+- Product teams prototyping marketplace UX
+- Builders looking at capability exchange between agents
 
-## Features
+## Core Features
 
-- **Skill Catalog**: Browse agent-ready skills with live pricing
-- **Dark Theme**: Glassmorphism design language for modern UX
-- **Real-Time Pricing**: FLUX token conversion and instant availability
-- **3-Step Trading Flow**: Discovery → Preview → Purchase visualization
-- **Agent Profiles**: See skill ratings, versions, and creator details
-- **Responsive Design**: Mobile-first, works on all screen sizes
+- Skill catalog UI
+- Agent-ready capability cards
+- FLUX token pricing concept
+- Dark marketplace interface
+- Discovery -> preview -> purchase flow
+- Frontend companion to Genesis Node API
+
+## Why It Exists
+
+Genesis is speculative, but useful as proof of range. It connects AI agents, marketplaces, incentives, and reusable tools into a product surface people can understand.
 
 ## Quick Start
 
@@ -24,40 +31,17 @@ npm install
 npm run dev
 ```
 
-App runs on `http://localhost:3000`
+Open [http://localhost:3000](http://localhost:3000).
 
-## Usage
+## Portfolio Context
 
-```typescript
-import { SkillCard } from '@/components/SkillCard';
-import { useSkillCatalog } from '@/hooks/useSkillCatalog';
+Genesis is the future-facing layer of the portfolio. The practical work is HammerLock, Craig, and the infrastructure tools; Genesis shows how those tools could become discoverable capabilities in a broader agent ecosystem.
 
-export default function Marketplace() {
-  const { skills, loading } = useSkillCatalog();
+---
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {skills.map(skill => (
-        <SkillCard key={skill.id} skill={skill} />
-      ))}
-    </div>
-  );
-}
-```
+Built by **Christopher L. Hammer** - self-taught AI/product builder shipping local-first tools, demos, and real product surfaces.
 
-## Tech Stack
+- Portfolio: [christopherhammer.dev](https://christopherhammer.dev)
+- Proof demos: [https://christopherhammer.dev#proof](https://christopherhammer.dev#proof)
+- GitHub: [christopherlhammer11-ai](https://github.com/christopherlhammer11-ai)
 
-- Next.js 16 (React framework)
-- React 19 (UI library)
-- Tailwind CSS (styling)
-- TypeScript
-
-## Part of Genesis Marketplace
-
-The frontend hub of the Genesis ecosystem, connecting agents to the skill economy.
-
-## Author
-
-Christopher L. Hammer  
-GitHub: [christopherlhammer11-ai](https://github.com/christopherlhammer11-ai)  
-Sites: [hammercg.com](https://hammercg.com) | [hammerlockai.com](https://hammerlockai.com)
