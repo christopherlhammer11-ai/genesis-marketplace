@@ -2,7 +2,7 @@
 
 **Agent skill marketplace experiment.** Genesis Marketplace explores a future where AI agents can discover, inspect, price, and install reusable capabilities.
 
-Demo: **Watch the demo:** [Genesis Marketplace](https://christopherhammer.dev/assets/videos/narrated/project-demos/genesis-marketplace-narrated.mp4)
+**Demo:** [Genesis Marketplace](https://christopherhammer.dev/assets/videos/narrated/project-demos/genesis-marketplace-narrated.mp4)
 
 ## Who Uses It
 
